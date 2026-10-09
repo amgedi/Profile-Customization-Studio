@@ -1,0 +1,10 @@
+import type { BannerSpecDocument,Layer } from '@pcs/bannerspec';
+import { loadJSON,saveJSON } from './storage.js';
+export interface IdentityKit {id:string;name:string;displayName:string;handle:string;pronouns:string;bio:string;colors:string[];font:string;links:string;footer:string;avatar?:string;logo?:string;effects?:Layer['effects'];behaviors?:Layer['behaviors'];badges?:string[];buttons?:string[];}
+export interface LocalAsset {id:string;name:string;kind:'image'|'component'|'font';tags:string[];favorite:boolean;lastUsed?:string;data?:string;layers?:Layer[];sourceWidth?:number;sourceHeight?:number;license?:string;creator?:string;source?:string;attribution?:string;}
+export interface StudioLibrary {schemaVersion:1;kits:IdentityKit[];assets:LocalAsset[];}
+export const emptyLibrary=():StudioLibrary=>({schemaVersion:1,kits:[],assets:[]});
+export async function loadLibrary(){const d=await loadJSON<StudioLibrary>('studio-library-v1');return d?.schemaVersion===1&&Array.isArray(d.assets)&&Array.isArray(d.kits)?d:emptyLibrary();}
+export async function saveLibrary(data:StudioLibrary){if(!await saveJSON('studio-library-v1',data))throw Error('Local storage failed or is full. Nothing was reported as saved. Export a library backup before closing.');}
+export function cloneComponent(layers:Layer[]):Layer[]{const copy=structuredClone(layers);const walk=(l:Layer)=>{l.id=crypto.randomUUID();l.effects?.forEach(f=>f.id=crypto.randomUUID());l.behaviors?.forEach(f=>f.id=crypto.randomUUID());if(l.type==='group')l.children.forEach(walk);};copy.forEach(walk);return copy;}
+export function applyIdentity(doc:BannerSpecDocument,kit:IdentityKit):BannerSpecDocument{const next=structuredClone(doc);next.brand={...next.brand,primary:kit.colors[0]??'#8b9dff',accent:kit.colors[1]??'#9ee7ff',text:kit.colors[2]??'#ffffff'};let first=true;const walk=(ls:Layer[])=>ls.forEach(l=>{if(l.type==='text'){l.fontFamily=kit.font;if(first&&kit.displayName){l.text=kit.displayName;first=false;}l.fill=kit.colors[2]??'#ffffff';}if(l.type==='group')walk(l.children);});walk(next.layers);return next;}

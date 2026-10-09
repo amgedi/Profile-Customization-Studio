@@ -1,0 +1,376 @@
+// Reconstructed launcher presentation. Bridge preserves the installation protocol.
+import { Button, LineEdit, CheckBox, ScrollView, Palette } from "std-widgets.slint";
+export struct VersionRow {
+    version: string,
+    role: int,
+    is-active: bool,
+}
+
+// One entry in the RECENT section of the Home page.
+export struct RecentRow {
+    name: string,
+    path: string,
+    edited: string,
+    missing: bool,
+}
+
+// One row of the Health page. Mirrors pcs_launcher_core::health::HealthCheck.
+export struct HealthRow {
+    id: string,
+    label: string,
+    ok: bool,
+    critical: bool,
+    detail: string,
+}
+
+// Bridge between the UI and the Rust backend.
+export global Bridge {
+    // Navigation (owned by the Rust shell so it can run the fade).
+    in-out property <string> page: "home";
+    callback navigate(string);
+
+    // Custom chrome (frameless window).
+    callback minimize();
+    callback toggle-maximize();
+    callback close-window();
+    in-out property <bool> maximized: false;
+
+    // Active-version pointer. state: 1 healthy, 0 not installed, 2 invalid.
+    in-out property <int> pointer-state: 0;
+    in-out property <string> studio-version: "0.3.3-dev";
+
+    // Health checks (run at startup + on explicit refresh, never in a loop).
+    in-out property <[HealthRow]> health-rows: [];
+    in-out property <bool> health-healthy: true;
+    in-out property <bool> health-busy: false;
+    callback refresh-health();
+
+    // Update state. state: 0 not checked, 1 up to date, 2 available,
+    // 3 no feed, 4 failed, 5 installed (ready).
+    in-out property <int> update-state: 0;
+    in-out property <string> update-status-text: "Not checked yet";
+    in-out property <string> available-version: "";
+    in-out property <string> feed-label: "";
+    in-out property <string> last-checked: "";
+    in-out property <bool> busy: false;
+    in-out property <string> busy-stage: "";
+
+    // Settings.
+    in-out property <bool> auto-check: false;
+    in-out property <bool> auto-download: false;
+    in-out property <bool> ask-before-install: true;
+    in-out property <string> channel: "dev";
+    in-out property <string> feed-url: "";
+    callback set-auto-check(bool);
+    callback set-auto-download(bool);
+    callback set-ask-before-install(bool);
+    callback set-channel(string);
+    callback set-feed-url(string);
+
+    // Versions.
+    in-out property <[VersionRow]> versions: [];
+    callback restore-version(string);
+    callback remove-version(string);
+    callback remove-old-copies();
+
+    // Recents (up to 3, Home page).
+    in-out property <[RecentRow]> recents: [];
+    callback launch-recent(string);
+    callback locate-recent(string);
+    callback remove-recent(string);
+
+    // Maintenance.
+    in-out property <bool> has-verify-report: false;
+    in-out property <bool> verify-ok: false;
+    in-out property <[string]> verify-lines: [];
+    callback verify-files();
+    // Repair UI state: delete the Studio preferences file only.
+    callback repair-prefs();
+    // Reset all Studio preferences: opens a double-confirm dialog first.
+    callback request-reset-prefs();
+    callback confirm-reset-prefs();
+    callback cancel-reset-prefs();
+    in-out property <bool> reset-confirm-open: false;
+    // Diagnostics: gather a report and copy it to the clipboard.
+    callback support-report();
+    callback copy-diagnostics();
+    callback open-logs();
+    callback open-appdata();
+
+    // Launch + updates.
+    callback launch();
+    callback safe-mode();
+    callback check-updates();
+    callback install-update();
+
+    // Crash-loop recovery screen.
+    in-out property <bool> recovery-visible: false;
+    in-out property <int> crash-count: 0;
+    callback recovery-launch-normal();
+    callback recovery-safe-mode();
+    callback recovery-repair-prefs();
+    callback recovery-restore-previous();
+    callback recovery-open-logs();
+    callback recovery-dismiss();
+
+    // Feedback line.
+    in-out property <string> status-line: "";
+    in-out property <bool> status-error: false;
+
+    // Misc identity.
+    in-out property <string> app-version: "0.3.3-dev";
+    in-out property <string> install-location: "";
+    in-out property <bool> reduced-motion: false;
+}
+
+
+export global Th {
+ out property <duration> anim: Bridge.reduced-motion ? 0ms : 120ms;
+ out property <color> bg: #14161c; out property <color> rail: #101218;
+ out property <color> card: #1c2029; out property <color> card-hover: #292e39;
+ out property <color> border: #313744; out property <color> text: #f1f3f7;
+ out property <color> text2: #a5afbf; out property <color> accent: #a8baff;
+}
+component Mark inherits Image { source: @image-url("icons/logo-64.png"); image-fit: contain; }
+component TitleBar inherits Rectangle {
+    height: 42px;
+    background: Th.rail;
+    Rectangle {
+        x: 0; y: parent.height - 1px; width: parent.width; height: 1px;
+        background: Th.border;
+    }
+    WindowMoveArea {
+        width: parent.width;
+        height: parent.height;
+        HorizontalLayout {
+            width: parent.width;
+            height: parent.height;
+            padding-left: 14px;
+            padding-right: 8px;
+            spacing: 11px;
+            Mark { width: 22px; height: 22px; y: (parent.height - self.height) / 2; }
+            Text {
+                text: "Profile Customization Studio";
+                color: Th.text2;
+                font-size: 12.5px;
+                font-weight: 600;
+                vertical-alignment: center;
+            }
+            Rectangle { horizontal-stretch: 1; background: transparent; }
+            // Double-click on the drag area toggles maximize/restore. The
+            // stretch fills the space between the title and the buttons.
+            TouchArea {
+                horizontal-stretch: 1;
+                height: parent.height;
+                double-clicked => { Bridge.toggle-maximize(); }
+            }
+            // Minimize.
+            Rectangle {
+                accessible-role: button;
+                accessible-label: "Minimize launcher";
+                accessible-action-default => { Bridge.minimize(); }
+                width: 40px; height: 30px;
+                y: (parent.height - self.height) / 2;
+                border-radius: 7px;
+                background: ma.has-hover ? Th.card-hover : transparent;
+                animate background { duration: Th.anim; }
+                ma := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { Bridge.minimize(); }
+                }
+                Rectangle {
+                    width: 10px; height: 1.4px;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    background: ma.has-hover ? Th.text : Th.text2;
+                }
+            }
+            // Maximize / restore.
+            Rectangle {
+                accessible-role: button;
+                accessible-label: Bridge.maximized ? "Restore launcher" : "Maximize launcher";
+                accessible-action-default => { Bridge.toggle-maximize(); }
+                width: 40px; height: 30px;
+                y: (parent.height - self.height) / 2;
+                border-radius: 7px;
+                background: xa.has-hover ? Th.card-hover : transparent;
+                animate background { duration: Th.anim; }
+                xa := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { Bridge.toggle-maximize(); }
+                }
+                Rectangle {
+                    width: 9px; height: 9px;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    border-radius: 2px;
+                    border-width: 1.4px;
+                    border-color: xa.has-hover ? Th.text : Th.text2;
+                    background: transparent;
+                    // Inner line turns the square into the "restore" glyph.
+                    Rectangle {
+                        visible: Bridge.maximized;
+                        x: 2px; y: -3px;
+                        width: 7px; height: 2px;
+                        background: xa.has-hover ? Th.text : Th.text2;
+                    }
+                }
+            }
+            // Close (red tint on hover).
+            Rectangle {
+                accessible-role: button;
+                accessible-label: "Close launcher";
+                accessible-action-default => { Bridge.close-window(); }
+                width: 40px; height: 30px;
+                y: (parent.height - self.height) / 2;
+                border-radius: 7px;
+                background: ca.has-hover ? #e5484d33 : transparent;
+                animate background { duration: Th.anim; }
+                ca := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { Bridge.close-window(); }
+                }
+                Path {
+                    width: 10px; height: 10px;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    viewbox-width: 10; viewbox-height: 10;
+                    stroke: ca.has-hover ? #ff7477 : Th.text2;
+                    stroke-width: 1.4px;
+                    commands: "M 1 1 L 9 9 M 9 1 L 1 9";
+                }
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------- navigation
+
+
+component Heading inherits Text { vertical-stretch: 0; color: Th.text; font-size: 25px; font-weight: 600; wrap: word-wrap; }
+component Note inherits Text { vertical-stretch: 0; color: Th.text2; font-size: 13px; wrap: word-wrap; }
+component Action inherits Button { min-height: 38px; max-height: 42px; vertical-stretch: 0; }
+component Home inherits Rectangle {
+ vertical-stretch: 0; background: transparent;
+ VerticalLayout {alignment: start;spacing:18px;
+  Rectangle {height:128px;border-radius:14px;background:#202b42;border-width:1px;border-color:#3a4c6b;
+   HorizontalLayout {padding:22px;spacing:20px;Mark {width:66px;height:66px;}VerticalLayout {spacing:8px;Text{text:"YOUR LOCAL CREATIVE STUDIO";color:#b7c9f4;font-size:10px;}Text{text:"Make your profile yours.";font-size:24px;font-weight:700;color:Th.text;}Text{text:"Design once. Adapt. Preview. Export.";font-size:12px;color:Th.text2;}}}
+  }
+  Rectangle {height:116px;background:Th.card;border-radius:12px;border-width:1px;border-color:Th.border;
+   HorizontalLayout {padding:20px;spacing:16px;VerticalLayout {spacing:8px;Text{text:"ACTIVE STUDIO";color:Th.text2;font-size:10px;}Text{text:Bridge.studio-version;color:Th.text;font-size:25px;font-weight:650;}Note{text:Bridge.pointer-state==1?"Ready on this device":"Needs attention";color:Bridge.pointer-state==1?#8bd9b4:#efbf79;}}Action{text:"Launch PCS →";primary:true;enabled:Bridge.pointer-state==1&&!Bridge.busy;clicked=>{Bridge.launch();}}}
+  }
+  HorizontalLayout {spacing:12px;Action{text:"Check updates";enabled:!Bridge.busy;clicked=>{Bridge.check-updates();}}Action{text:"Repair / recovery";clicked=>{Bridge.navigate("maintenance");}}}
+  Note{text:Bridge.busy?Bridge.busy-stage:Bridge.update-status-text;font-size:12px;}
+  if Bridge.update-state==2:Action{text:"Install "+Bridge.available-version;enabled:!Bridge.busy;clicked=>{Bridge.install-update();}}
+  Text{text:"RECENT PROJECTS";font-size:10px;color:Th.text2;}
+  if Bridge.recents.length==0:Note{text:"Open or create a project in Studio. Recent projects appear here after saving.";}
+  for item[index] in Bridge.recents:Rectangle {if index<3:HorizontalLayout{padding:12px;spacing:12px;VerticalLayout{Text{text:item.name;color:Th.text;font-size:13px;overflow:elide;}Note{text:item.missing?"File unavailable":item.edited;font-size:10px;}}Action{text:item.missing?"Locate":"Open";clicked=>{if item.missing{Bridge.locate-recent(item.path);}else{Bridge.launch-recent(item.path);}}}}height:index<3?62px:0px;background:Th.card;border-radius:8px;}
+  Note{text:"Local projects · Preserved versions · No automatic account uploads";font-size:10px;}
+ }
+}
+component Versions inherits Rectangle {
+ vertical-stretch: 0;
+ background: transparent;
+ VerticalLayout { alignment: start; spacing: 16px;
+  Heading { text: "Your installed versions"; }
+  Note { text: "Restore a previous build, or reactivate the current one. Activation changes the version used on the next launch."; }
+  for v in Bridge.versions: Rectangle { height: 72px; background: Th.card; border-radius: 8px;
+   HorizontalLayout { padding: 14px; spacing: 10px;
+    VerticalLayout { Text { text: v.version; color: Th.text; font-size: 16px; } Note { text: v.is-active ? "Active" : v.role == 1 ? "Previous" : "Installed"; font-size: 11px; } }
+    Action { text: v.is-active ? "Active" : "Activate"; enabled: !v.is-active && !Bridge.busy; clicked => { Bridge.restore-version(v.version); } }
+   }
+  }
+  if Bridge.versions.length == 0: Note { text: "No installed versions yet. Configure an update feed to install Studio."; }
+  Action { text: "Open active Studio"; enabled: Bridge.pointer-state == 1; clicked => { Bridge.launch(); } }
+ }
+}
+component Repair inherits Rectangle {
+ vertical-stretch: 0;
+ background: transparent;
+ VerticalLayout { alignment: start; spacing: 14px;
+  Heading { text: "A fresh start, safely."; }
+  Note { text: "Check application files or start with minimal UI settings. Your saved projects and recovery drafts are preserved."; }
+  HorizontalLayout { spacing: 8px; Action { text: "Check installation"; clicked => { Bridge.refresh-health(); Bridge.verify-files(); } } Action { text: "Open Safe Mode"; enabled: Bridge.pointer-state == 1; clicked => { Bridge.safe-mode(); } } }
+  for h in Bridge.health-rows: Note { text: (h.ok ? "✓  " : "!  ") + h.label + " — " + h.detail; color: h.ok ? Th.text2 : #efbf79; }
+  if Bridge.has-verify-report: Note { text: Bridge.verify-ok ? "File verification passed" : "File verification needs attention"; }
+  for line in Bridge.verify-lines: Note { text: line; font-size: 11px; }
+  Action { text: "Reset UI preferences…"; clicked => { Bridge.request-reset-prefs(); } }
+  HorizontalLayout { spacing: 8px; Action { text: "Open logs"; clicked => { Bridge.open-logs(); } } Action { text: "Copy support report"; clicked => { Bridge.copy-diagnostics(); } } }
+ }
+}
+component Settings inherits Rectangle {
+ vertical-stretch: 0;
+ background: transparent;
+ VerticalLayout { alignment: start; spacing: 14px;
+  Heading { text: "Updates, on your terms."; }
+  Note { text: "A failed check is reported as a failure. Updates never block opening your installed Studio."; }
+  Note { text: "Update feed"; }
+  LineEdit { text: Bridge.feed-url; placeholder-text: "Local feed by default, or HTTPS manifest URL"; edited(value) => { Bridge.set-feed-url(value); } }
+  Note { text: "Channel"; }
+  HorizontalLayout { spacing: 8px; for channel in ["dev", "beta", "stable"]: Action { text: channel; primary: Bridge.channel == channel; clicked => { Bridge.set-channel(channel); } } }
+  CheckBox { text: "Check for updates at startup"; checked: Bridge.auto-check; toggled => { Bridge.set-auto-check(self.checked); } }
+  CheckBox { text: "Download updates automatically"; checked: Bridge.auto-download; toggled => { Bridge.set-auto-download(self.checked); } }
+  CheckBox { text: "Ask before installing"; checked: Bridge.ask-before-install; toggled => { Bridge.set-ask-before-install(self.checked); } }
+  Action { text: "Check now"; enabled: !Bridge.busy; clicked => { Bridge.check-updates(); } }
+  Note { text: Bridge.busy ? Bridge.busy-stage : Bridge.update-status-text; }
+  if Bridge.update-state == 2: Action { text: "Install update"; enabled: !Bridge.busy; clicked => { Bridge.install-update(); } }
+ }
+}
+component Notes inherits Rectangle {
+ vertical-stretch: 0;
+ background: transparent;
+ VerticalLayout { alignment: start; spacing: 16px;
+  Heading { text: "Made for your next idea."; }
+  Note { text: "Local development reconstruction • " + Bridge.app-version; color: Th.accent; }
+  Note { text: "Canvas-first workspace\nIndependent application menus and project status\nVisual discovery, real rendered effect previews\nNon-destructive platform adaptation and export\nGuided design and direct profile editing"; }
+  Note { text: "Support"; color: Th.text; }
+  Note { text: "If Studio needs attention, open Repair for Safe Mode, installation checks and a support report."; }
+  Action { text: "Open support logs"; clicked => { Bridge.open-logs(); } }
+ }
+}
+export component LauncherWindow inherits Window {
+ no-frame: true; resize-border-width: 6px; title: "Profile Customization Studio — Launcher";
+ icon: @image-url("icons/logo-32.png"); preferred-width: 760px; preferred-height: 780px; min-width: 580px; min-height: 600px; background: Th.bg;
+ in-out property <bool> entering: true;
+ init => { Palette.color-scheme = ColorScheme.dark; }
+ VerticalLayout { spacing: 0;
+  TitleBar {}
+  ScrollView {
+   VerticalLayout { padding: 32px; spacing: 18px;
+    if Bridge.page == "home": Home {}
+    if Bridge.page == "versions": Versions {}
+    if Bridge.page == "maintenance" || Bridge.page == "health": Repair {}
+    if Bridge.page == "settings" || Bridge.page == "updates": Settings {}
+    if Bridge.page == "notes": Notes {}
+    if Bridge.status-line != "": Note { text: Bridge.status-line; color: Bridge.status-error ? #efbf79 : Th.text2; }
+   }
+  }
+  HorizontalLayout { padding: 14px; spacing: 6px;
+   for tab in [{id: "home", label: "Home"}, {id: "versions", label: "Versions"}, {id: "maintenance", label: "Repair"}, {id: "settings", label: "Settings"}, {id: "notes", label: "Notes"}]: Action {
+    text: tab.label; primary: Bridge.page == tab.id; clicked => { Bridge.navigate(tab.id); }
+   }
+  }
+ }
+ if Bridge.reset-confirm-open: Rectangle {
+  background: #000000bb; TouchArea {}
+  Rectangle { width: parent.width - 80px; height: 210px; x: 40px; y: (parent.height - self.height)/2; background: Th.card; border-radius: 12px;
+   VerticalLayout { padding: 24px; spacing: 12px;
+    Heading { text: "Reset UI preferences?"; font-size: 20px; }
+    Note { text: "Window, panel and appearance preferences will return to defaults. Projects and recovery drafts stay intact."; }
+    HorizontalLayout { spacing: 8px; Action { text: "Cancel"; clicked => { Bridge.cancel-reset-prefs(); } } Action { text: "Reset preferences"; clicked => { Bridge.confirm-reset-prefs(); } } }
+   }
+  }
+ }
+ if Bridge.recovery-visible: Rectangle {
+  background: Th.bg;
+  VerticalLayout { padding: 40px; spacing: 16px; alignment: center;
+   Heading { text: "Let's get you creating again."; }
+   Note { text: "Recent launches did not report a healthy startup. Your projects are safe. Try Safe Mode or restore an installed version."; }
+   Action { text: "Open Safe Mode"; clicked => { Bridge.recovery-safe-mode(); } }
+   Action { text: "Restore previous version"; enabled: Bridge.versions.length > 1; clicked => { Bridge.recovery-restore-previous(); } }
+   Action { text: "Start normally"; clicked => { Bridge.recovery-launch-normal(); } }
+   Action { text: "Open logs"; clicked => { Bridge.recovery-open-logs(); } }
+   Action { text: "Back to launcher"; clicked => { Bridge.recovery-dismiss(); } }
+  }
+ }
+}

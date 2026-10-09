@@ -1,0 +1,3 @@
+import {useState} from 'react';
+import {PROFILE_ICONS} from '../profileIcons.js';
+export function IconPicker({value,onChange}:{value:string;onChange:(value:string)=>void}){const [query,setQuery]=useState('');return <div className="profile-icon-picker"><input aria-label="Search icons" placeholder="Search icons…" value={query} onChange={e=>setQuery(e.target.value)}/><div role="group" aria-label="Icon choices">{Object.entries(PROFILE_ICONS).filter(([name])=>name.includes(query.toLowerCase())).map(([name,Icon])=><button type="button" key={name} aria-label={'Choose '+name+' icon'} aria-pressed={value===name} title={name} onClick={()=>onChange(name)}><Icon size={24}/><small>{name}</small></button>)}</div></div>;}

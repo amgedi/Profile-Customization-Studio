@@ -1,0 +1,10 @@
+[package]
+license = "AGPL-3.0-only"
+name = "pcs-update-helper"
+version = "0.2.6-dev"
+edition = "2021"
+description = "Two-stage launcher self-update helper: backs up, replaces, verifies and restarts the launcher."
+
+[dependencies]
+sha2 = "0.10"
+hex = "0.4"

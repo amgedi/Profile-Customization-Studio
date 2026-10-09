@@ -1,0 +1,133 @@
+/* ============================================================
+   PCS design tokens — single source of visual truth.
+   Dark-first. Light theme later = swap this layer only.
+   ============================================================ */
+:root {
+  /* Surfaces (layered graphite/slate) */
+  --pcs-bg-root: #14161a;
+  --pcs-bg-workspace: #0f1114;
+  --pcs-bg-panel: #171a1f;
+  --pcs-bg-raised: #1d2127;
+  --pcs-bg-hover: #22272f;
+  --pcs-bg-selected: rgba(97, 141, 255, 0.13);
+  --pcs-bg-input: #20252c;
+
+  /* Borders */
+  --pcs-border-subtle: #242932;
+  --pcs-border-strong: #333a46;
+
+  /* Text */
+  --pcs-text-primary: #e8ebf1;
+  --pcs-text-secondary: #9ba4b3;
+  --pcs-text-muted: #667081;
+
+  /* Accent — single restrained application accent */
+  --pcs-accent: #5b8cff;
+  --pcs-accent-hover: #6f9bff;
+  --pcs-accent-soft: rgba(91, 140, 255, 0.16);
+  --pcs-accent-text: #ffffff;
+
+  /* Status */
+  --pcs-success: #3ecf8e;
+  --pcs-warning: #e0a458;
+  --pcs-danger: #e5484d;
+
+  /* Radius */
+  --pcs-radius-sm: 6px;
+  --pcs-radius-md: 8px;
+  --pcs-radius-lg: 12px;
+
+  /* Shadows (sparing) */
+  --pcs-shadow-small: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --pcs-shadow-medium: 0 6px 24px rgba(0, 0, 0, 0.4);
+  --pcs-shadow-artboard: 0 2px 6px rgba(0, 0, 0, 0.4), 0 16px 48px rgba(0, 0, 0, 0.45);
+
+  /* Typography */
+  --pcs-font-ui: "Segoe UI Variable Text", "Segoe UI", Inter, system-ui, sans-serif;
+  --pcs-font-mono: "Cascadia Code", "Cascadia Mono", Consolas, monospace;
+  --pcs-fs-caption: 11px;
+  --pcs-fs-body: 12.5px;
+  --pcs-fs-body-lg: 13.5px;
+  --pcs-fs-title: 14px;
+
+  /* Control metrics */
+  --pcs-control-h: 32px;
+  --pcs-control-h-lg: 38px;
+
+  /* Motion */
+  --pcs-dur-fast: 110ms;
+  --pcs-dur-panel: 170ms;
+
+  /* Panel metrics */
+  --pcs-panel-left-w: 232px;
+  --pcs-panel-right-w: 288px;
+  --pcs-toolrail-w: 44px;
+
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --pcs-dur-fast: 0ms; --pcs-dur-panel: 0ms; }
+}
+
+/* ---------- Custom appearance (R30) ---------- */
+/* Accent override comes from JS as --pcs-accent-override; contrast/glow map to data attrs. */
+:root { --pcs-ui-glow: 0.5; }
+[data-uiglow="off"] { --pcs-ui-glow: 0; }
+[data-uiglow="strong"] { --pcs-ui-glow: 1; }
+[data-contrast="low"] { --pcs-border-strong: var(--pcs-border-subtle); }
+[data-contrast="high"] {
+  --pcs-border-subtle: #3a4250; --pcs-border-strong: #4c5768;
+  --pcs-text-secondary: #b4bdc9; --pcs-text-muted: #8a93a3;
+}
+[data-theme="light"][data-contrast="high"] {
+  --pcs-border-subtle: #b9c0cc; --pcs-border-strong: #9aa3b2;
+  --pcs-text-secondary: #3d4655; --pcs-text-muted: #5d6675;
+}
+
+
+/* Overlay z-index ladder (R91) — the ONLY place literal z-index levels live.
+   App shell < canvas hints < panels < toolbars < popovers < floating hints
+   < backdrops < modals/dialogs < tour < critical confirmations < toasts. */
+:root {
+  --z-shell: 1;
+  --z-canvas-hint: 2;
+  --z-panel-sticky: 10;
+  --z-toolbar: 20;
+  --z-preview: 30;
+  --z-popover-badge: 60;
+  --z-menu: 500;
+  --z-popover: 500;
+  --z-float: 100;
+  --z-backdrop: 800;
+  --z-modal: 800;
+  --z-dialog: 800;
+  --z-tour: 900;
+  --z-confirm: 950;
+  --z-toast: 1000;
+  --studio-chrome: 200;
+  --studio-menu: var(--z-menu);
+  --studio-dialog: var(--z-dialog);
+  --studio-tooltip: var(--z-confirm);
+  --studio-notice: var(--z-toast);
+  --studio-library-width: 260px;
+}
+
+/* Cursor ambience (0.2.5) — local surface lighting. The highlight is drawn
+   by each eligible interactive surface itself (see CursorGlow.tsx), clipped
+   to that component via border-radius: inherit. No global spotlight layer. */
+[data-cursor-light] { position: relative; }
+[data-cursor-light]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--light-o, 0);
+  transition: opacity 0.25s ease;
+  background: radial-gradient(
+    var(--light-r, 90px) circle at var(--cx, 50%) var(--cy, 50%),
+    color-mix(in srgb, var(--pcs-accent, #5b8cff) 55%, transparent),
+    transparent 72%
+  );
+}

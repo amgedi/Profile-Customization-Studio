@@ -1,0 +1,21 @@
+[package]
+license = "AGPL-3.0-only"
+name = "pcs-studio"
+version = "0.3.3"
+description = "Profile Customization Studio — make your profile yours."
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+keyring = { version = "3", features = ["windows-native", "sync-secret-service"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

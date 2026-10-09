@@ -1,0 +1,20 @@
+name: Bug report
+description: Report a reproducible PCS problem without private project data.
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Include expected behavior and steps to reproduce. Redact tokens, usernames and private content.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: PCS version and Windows version
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or redacted logs

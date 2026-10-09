@@ -1,0 +1,12 @@
+[workspace]
+resolver = "2"
+members = [
+    "apps/studio/src-tauri",
+    "apps/launcher",
+    "apps/update-helper",
+    "crates/pcs-launcher-core",
+]
+
+[profile.release]
+lto = "thin"
+strip = true

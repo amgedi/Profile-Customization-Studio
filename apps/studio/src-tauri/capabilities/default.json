@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/capability/2",
+  "identifier": "default",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-maximize",
+    "core:window:allow-unmaximize",
+    "core:window:allow-set-size",
+    "core:window:allow-is-maximized",
+    "core:window:allow-start-dragging",
+    "core:window:allow-close",
+    "core:window:allow-destroy",
+    "core:window:allow-internal-toggle-maximize",
+    "dialog:default",
+    "fs:allow-write-text-file",
+    "fs:allow-write-file",
+    "fs:allow-mkdir",
+    "fs:allow-remove",
+    "fs:allow-rename",
+    "fs:allow-exists",
+    "fs:allow-read-text-file",
+    "fs:allow-read-file",
+    {
+      "identifier": "fs:default",
+      "allow": [
+        { "path": "**/*.pcsproj" },
+        { "path": "**/*.svg" },
+        { "path": "**/*.json" },
+        { "path": "**/*.md" },
+        { "path": "**/*.yml" },
+        { "path": "**/*.png" },
+        { "path": "**/*.jpg" },
+        { "path": "**/*.jpeg" },
+        { "path": "**/*.webp" },
+        { "path": "$APPDATA/**" },
+        { "path": "**" }
+      ]
+    }
+  ]
+}

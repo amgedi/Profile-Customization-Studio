@@ -1,0 +1,59 @@
+/* Shared responsive geometry: content determines height; previews keep aspect. */
+*,*::before,*::after{box-sizing:border-box}
+.studio-document-actions{display:flex;align-items:center;gap:7px;min-width:0}
+.studio-mark{display:flex;align-items:center;justify-content:center;width:52px;min-width:52px;height:32px;padding:0;font-size:23px;font-weight:850;font-style:italic;letter-spacing:-2px;line-height:1}
+.studio-mark .pcs-letter-p{color:#9ee7ff;text-shadow:0 0 10px #52c6ff,0 0 18px #52c6ff77}
+.studio-mark .pcs-letter-cs{color:#d3caff;text-shadow:0 0 7px #a58bff55}
+.studio-discovery,.side-panel,.animate-side{min-width:0;min-height:0}
+.animate-side{resize:horizontal;overflow:auto;min-width:230px;max-width:45vw;flex-shrink:0}
+.panel-body{min-width:0}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:30px;white-space:normal}
+.btn svg,.icon-btn svg,.layer-item svg{flex-shrink:0}
+input[type=range]{appearance:none;-webkit-appearance:none;height:6px;border:0;border-radius:99px;background:var(--pcs-border-strong);accent-color:var(--pcs-accent);cursor:pointer;min-width:40px;max-width:100%}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:15px;height:15px;border:3px solid var(--pcs-bg-panel);border-radius:50%;background:var(--pcs-accent);box-shadow:0 0 0 1px var(--pcs-accent)}
+input[type=range]:focus-visible{outline:2px solid var(--pcs-accent);outline-offset:5px}
+.fx-modal,.export-studio{resize:both;min-width:min(720px,94vw);min-height:min(420px,90vh);max-width:96vw;max-height:94vh}
+.fx-modal{height:min(700px,88vh)}.fx-modal-body{min-height:0;overflow:auto}
+.preset-card .card-add-btn{width:auto;min-width:64px;height:27px;padding:4px 8px;border-radius:6px;display:flex;align-items:center;gap:4px;background:var(--pcs-accent);color:var(--pcs-accent-text,#101322);font-size:11px;right:8px;bottom:8px}
+.preset-card .scene-card-meta{padding-bottom:40px}.preset-card-visual,.anim-card-visual{display:block;aspect-ratio:240/116;overflow:hidden;min-height:80px;height:auto;width:100%}
+.anim-card-visual img{width:100%;height:100%;display:block;object-fit:contain}
+.scene-details{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,260px);align-items:center;gap:20px;padding:16px;margin-top:12px;border:1px solid var(--pcs-border-strong);border-radius:12px;background:var(--pcs-bg-raised)}
+.scene-details-actions{display:grid;gap:10px;min-width:0}.preset-large-preview{width:100%;overflow:hidden}.preset-large-preview .anim-card-visual{min-height:0}
+.scene-details .btn{width:100%}.scene-sequence{display:grid;gap:8px;padding-block:12px;border-block:1px solid var(--pcs-border-subtle);margin-block:12px;font-size:12px}
+.scene-sequence-tabs{display:flex;gap:5px;overflow:auto}.scene-sequence-tabs button{border:1px solid var(--pcs-border-strong);background:var(--pcs-bg-input);color:var(--pcs-text-primary);border-radius:7px;padding:8px;white-space:nowrap}.scene-sequence-tabs button[aria-selected=true]{border-color:var(--pcs-accent);background:var(--pcs-accent-soft)}
+.scene-sequence label{display:flex;align-items:center;gap:10px}.scene-sequence input{width:100%;min-width:0;background:var(--pcs-bg-input);color:var(--pcs-text-primary);border:1px solid var(--pcs-border-strong);border-radius:5px;padding:6px}
+.animate-transport{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+/* Isolate README content from legacy .profile-block flex row styles. */
+.profile-designer .github-markdown .profile-block{display:block;align-items:initial;padding:0;background:transparent;color:var(--gh-text);margin:0 0 24px;min-width:0;width:100%}
+.profile-designer .github-markdown :is(h1,h2,h3,p,span,pre,code,td,th){color:inherit}
+.profile-designer .github-markdown :is(input,textarea){background:var(--gh-panel);color:var(--gh-text)}
+.profile-designer .github-markdown .profile-block-toolbar{color:var(--gh-text)}
+.profile-banner{overflow:hidden;border-radius:8px;max-width:100%;isolation:isolate}.profile-banner img{height:auto;object-fit:contain;max-width:100%}.profile-banner:disabled{opacity:1}
+.github-readme{overflow:visible}.github-markdown{min-width:0}.profile-calendar{max-width:100%;height:auto;object-fit:contain}
+.profile-badges{justify-content:inherit}.profile-block[style*="center"] .profile-badges{justify-content:center}.profile-block[style*="right"] .profile-badges{justify-content:flex-end}
+.profile-badges a{display:inline-flex;max-width:100%;padding:0;background:none}.profile-badges a span{padding:6px 12px;border:0;line-height:1.4}.profile-badges img{max-height:40px;max-width:100%;object-fit:contain}
+.profile-context{resize:both;width:340px;min-width:260px;max-width:min(560px,90%);max-height:75%;min-height:160px}
+.profile-link-editor{padding:10px 0;border-bottom:1px solid var(--pcs-border-subtle)}.profile-link-editor input{width:100%!important;max-width:none!important}.profile-link-editor input[type=color]{width:42px!important}
+.profile-context .btn{margin:3px}.profile-game-picker{grid-template-columns:repeat(auto-fit,minmax(85px,1fr))}.profile-game-picker button{min-width:0}.profile-game-picker img{height:58px;object-fit:contain;aspect-ratio:auto}
+.export-studio{width:min(1280px,96vw);height:min(840px,92vh);border-radius:18px}.export-head{flex-wrap:wrap;gap:10px}.export-body{display:grid;grid-template-columns:minmax(160px,210px) minmax(220px,1fr) minmax(240px,300px);overflow:hidden}
+.export-targets,.export-settings{width:auto;min-width:0;padding:16px;overflow:auto}.export-preview{min-width:0;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.export-settings .segmented{flex-wrap:wrap}.export-settings label{display:grid;gap:10px;margin-block:8px;font-size:12px}.export-settings input[type=range]{width:100%}
+.export-preset{border:1px solid var(--pcs-border-subtle);padding:12px;margin-bottom:8px}.export-preset.selected{border-color:var(--pcs-accent)}
+.export-canvas{flex:none;min-height:160px;height:auto;padding:16px;overflow:hidden}.export-canvas img{height:auto;max-width:100%;object-fit:contain}.export-canvas .target-context{margin:auto}
+.export-report{margin:0}.target-capabilities{padding:12px;border:1px solid var(--pcs-border-strong);border-radius:10px;background:var(--pcs-bg-input);font-size:11px;line-height:1.5;margin-bottom:14px}.target-capabilities strong{font-size:12px;color:var(--pcs-text-primary)}.target-capabilities p{margin:6px 0;color:var(--pcs-text-secondary)}.target-capabilities a{color:var(--pcs-accent)}
+.home-v2{padding:20px 28px!important}.home-hero{margin-block:12px 18px!important;padding:0!important}.home-section{margin-top:22px!important}.home-actions{gap:10px!important}.home-hero h1{font-size:clamp(26px,3vw,40px)!important}
+@media(max-width:1100px){.export-body{grid-template-columns:155px minmax(200px,1fr) 240px}.export-preview{padding:12px}.export-settings,.export-targets{padding:10px}.studio-document-row{gap:5px}.studio-document-actions{gap:4px}.studio-mode-tabs button{padding:7px}.profile-workbench-bar{gap:5px}.profile-account input{width:125px}}
+@media(max-width:850px){.export-body{grid-template-columns:140px minmax(0,1fr)}.export-settings{grid-column:1/-1;max-height:230px;border-left:0;border-top:1px solid var(--pcs-border-subtle)}.export-head .segmented{order:3;width:100%}.scene-details{grid-template-columns:1fr}.profile-repo-grid{grid-template-columns:1fr}}
+:focus-visible{outline:2px solid var(--pcs-accent);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+.export-settings input[type=color]{height:34px!important;min-height:34px;max-height:34px;flex:none;width:100%;padding:3px;border-radius:6px}
+.preview-banner-actions{display:flex;gap:8px;justify-content:center;padding:8px;flex:none}
+.scene-card-meta .scene-use-btn{margin-top:6px;width:100%;font-size:11px}
+.scene-card-meta{min-width:0}.animate-side select{max-width:100%;background:var(--pcs-bg-input);color:var(--pcs-text-primary);border:1px solid var(--pcs-border-strong);padding:7px;border-radius:6px}
+.profile-designer .profile-block[style*="center"] .profile-repo-grid{justify-items:stretch;text-align:center}
+.profile-designer .profile-block[style*="center"] .profile-repo-grid strong{justify-content:center}
+.fx-modal :is(button,input,select),.dialog :is(button,input,select){max-width:100%}
+
+.home-actions>button:nth-child(-n+3){min-height:48px!important;align-self:stretch}.home-actions{align-items:stretch}
+
+.preset-card .card-add-btn{opacity:1!important}.preset-card .scene-card-meta{padding-bottom:46px}

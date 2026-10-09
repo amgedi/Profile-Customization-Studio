@@ -1,0 +1,10 @@
+{
+  "product": "profile-customization-studio",
+  "channel": "dev",
+  "version": "0.1.1",
+  "minimum_launcher_version": "0.1.0",
+  "download_url": "artifacts/0.1.1",
+  "sha256": "REPLACE_WITH_DIRECTORY_HASH_SEE_docs/launcher/UPDATE_PROTOCOL.md",
+  "size": 0,
+  "release_notes": "Mock update fixture for local development only. Not a real release."
+}
