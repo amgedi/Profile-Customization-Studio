@@ -1,6 +1,28 @@
+<div align="center">
+
+<img src="./apps/studio/public/brand/studio.png" width="128" alt="Profile Customization Studio logo" />
+
 # Profile Customization Studio
 
+**Make your profile yours.**
+
 Design your online identity, preview it across platforms, and export the right version.
+
+<br/>
+
+[![Download PCS](https://img.shields.io/badge/Download_PCS-v0.3.3-6B5D73?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/amgedi/Profile-Customization-Studio/releases/download/v0.3.3/PCS-0.3.3-Windows-x64.zip)
+[![Public Release](https://img.shields.io/badge/Public_Release-v0.3.3-58704F?style=for-the-badge&logo=github&logoColor=white)](https://github.com/amgedi/Profile-Customization-Studio/releases/tag/v0.3.3)
+[![Getting Started](https://img.shields.io/badge/Getting_Started-Start_Here-4F7652?style=for-the-badge)](https://github.com/amgedi/Profile-Customization-Studio/blob/main/docs/getting-started.md)
+
+[![License](https://img.shields.io/badge/License-AGPL--3.0-A18463?style=flat-square)](https://github.com/amgedi/Profile-Customization-Studio/blob/main/LICENSE)
+[![Security](https://img.shields.io/badge/Security-Policy-725D45?style=flat-square&logo=github)](https://github.com/amgedi/Profile-Customization-Studio/blob/main/SECURITY.md)
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub_Sponsors-876B52?style=flat-square&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/amgedi)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-6D7F58?style=flat-square&logo=kofi&logoColor=white)](https://ko-fi.com/openfhs)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-Support-A18463?style=flat-square&logo=buymeacoffee&logoColor=white)](https://buymeacoffee.com/openfhs)
+
+</div>
+
+<br/>
 
 PCS is a free, local-first Windows desktop design tool. **Version 0.3.3.** See the [0.3.3 release notes](docs/release-notes-0.3.3.md) for changes and limits.
 
@@ -33,7 +55,13 @@ PCS is independent and is not affiliated with the previewed platforms. Names bel
 
 PCS is free and open source. Optional support helps fund development, testing, documentation, accessibility, and long-term maintenance. Every feature remains free. Support appears in the welcome, Home, About and Settings; you can skip immediately.
 
-[GitHub Sponsors](https://github.com/sponsors/amgedi) · [Ko-fi](https://ko-fi.com/openfhs) · [Buy Me a Coffee](https://buymeacoffee.com/openfhs)
+<div align="center">
+
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub_Sponsors-876B52?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/amgedi)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-openfhs-6D7F58?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/openfhs)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-openfhs-A18463?style=for-the-badge&logo=buymeacoffee&logoColor=white)](https://buymeacoffee.com/openfhs)
+
+</div>
 
 ## Run from source
 
