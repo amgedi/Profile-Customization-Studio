@@ -19,7 +19,7 @@ jobs:
       - run: cargo test --workspace --locked
       - run: cargo build --workspace --release --locked
       - run: node scripts/check-asset-licenses.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: source-check-logs
           path: THIRD_PARTY_NOTICES.md
